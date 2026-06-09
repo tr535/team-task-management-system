@@ -42,3 +42,24 @@ Here is the system in action:
 
 **Task Management:**
 ![Add Task](add-task.png)
+
+
+
+## Getting Started
+
+### Installation
+
+```bash
+git clone https://github.com/your-username/team-task-management-system.git
+cd team-task-management-system
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+Open your browser and navigate to:
+
+```
+http://127.0.0.1:8000
+```
+
