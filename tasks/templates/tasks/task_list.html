@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>TaskProject - ניהול משימות</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap');
+        :root { --brand-primary: #0f172a; --brand-accent: #3b82f6; --bg-soft: #f1f5f9; --text-dark: #1e293b; --text-light: #64748b; }
+        body { background-color: var(--bg-soft); font-family: 'Assistant', sans-serif; color: var(--text-dark); margin: 0; }
+        .navbar { background: var(--brand-primary); padding: 12px 40px; }
+        .navbar-brand { font-weight: 700; color: #fff !important; }
+        .page-header { background: white; padding: 30px 40px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: flex-end; }
+        .team-info h1 { font-weight: 700; font-size: 1.8rem; margin: 0; color: var(--brand-primary); }
+        .action-bar { padding: 20px 40px; display: flex; gap: 12px; }
+        .btn-main { background: var(--brand-accent); color: white; padding: 8px 20px; border-radius: 6px; font-weight: 600; text-decoration: none; }
+        .btn-secondary-outline { background: white; color: var(--text-dark); border: 1px solid #e2e8f0; padding: 8px 20px; border-radius: 6px; font-weight: 600; text-decoration: none; }
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; padding: 0 40px 40px; }
+        .task-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; display: flex; flex-direction: column; min-height: 250px; transition: 0.3s; }
+        .task-card:hover { box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
+        .status-tag { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 4px; }
+        .new { background: #f1f5f9; color: #475569; }
+        .in_progress { background: #eff6ff; color: #1e40af; }
+        .completed { background: #f0fdf4; color: #166534; }
+        .task-title { font-weight: 700; font-size: 1.1rem; margin: 15px 0 8px; }
+        .card-actions { margin-top: auto; padding-top: 15px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .assignee-box { font-size: 0.8rem; background: #f8fafc; padding: 4px 12px; border-radius: 20px; border: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'task_list' %}"><i class="fas fa-check-double"></i> TaskProject</a>
+        <div class="text-white small">
+            <i class="far fa-user-circle me-1"></i> {{ request.user.username }}
+            <a href="{% url 'logout' %}" class="text-white-50 ms-3 text-decoration-none">התנתק</a>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="team-info">
+            <span class="text-primary fw-bold small text-uppercase">ניהול צוות</span>
+            <h1>{{ team_name }}</h1>
+        </div>
+        <div class="user-role small fw-bold text-muted">
+            תפקיד: {{ profile.get_role_display }}
+        </div>
+    </header>
+
+    <div class="action-bar">
+        <a href="{% if is_filtered %}{% url 'task_list' %}{% else %}?user={{ request.user.id }}{% endif %}" class="btn-secondary-outline">
+            <i class="fas {% if is_filtered %}fa-layer-group{% else %}fa-filter{% endif %} me-2"></i>
+            {% if is_filtered %}כל המשימות{% else %}המשימות שלי{% endif %}
+        </a>
+
+        {% if profile.role == 'manager' %}
+        <a href="{% url 'add_task' %}" class="btn-main">
+            <i class="fas fa-plus me-1"></i> משימה חדשה
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="task-grid">
+        {% for task in tasks %}
+        <div class="task-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="status-tag {{ task.status }}">
+                    {{ task.get_status_display }}
+                </div>
+                <span class="small text-muted fw-bold">{{ task.deadline|date:"d/m/y" }}</span>
+            </div>
+
+            <h3 class="task-title">{{ task.title }}</h3>
+            <p class="text-muted small">{{ task.description|truncatewords:20 }}</p>
+
+            <div class="mt-3">
+                {% if task.status != 'completed' %}
+                    {% if task.assigned_to == request.user or profile.role == 'manager' %}
+                    <form action="{% url 'update_status' task.id %}" method="POST">
+                        {% csrf_token %}
+                        <select name="status" onchange="this.form.submit()" class="form-select form-select-sm">
+                            <option value="new" {% if task.status == 'new' %}selected{% endif %}>חדש</option>
+                            <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>בתהליך</option>
+                            <option value="completed" {% if task.status == 'completed' %}selected{% endif %}>הושלם</option>
+                        </select>
+                    </form>
+                    {% endif %}
+                {% else %}
+                    <div class="small text-success fw-bold"><i class="fas fa-lock me-1"></i> משימה הושלמה וננעלה</div>
+                {% endif %}
+            </div>
+
+            <div class="card-actions">
+                <div class="user-section">
+                    {% if task.assigned_to %}
+                        <span class="assignee-box"><i class="fas fa-user-check me-1"></i> {{ task.assigned_to.username }}</span>
+                    {% else %}
+                        <a href="{% url 'claim_task' task.id %}" class="btn btn-sm btn-outline-primary fw-bold">שייך אלי</a>
+                    {% endif %}
+                </div>
+
+                <div class="admin-actions">
+                    {% if profile.role == 'manager' and not task.assigned_to %}
+                        <a href="{% url 'edit_task' task.id %}" class="text-primary me-2" title="עריכה">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'delete_task' task.id %}" class="text-danger" onclick="return confirm('למחוק משימה זו?')" title="מחיקה">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-5" style="grid-column: 1/-1;">
+            <p class="text-muted">אין משימות להצגה בצוות זה.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
+
+

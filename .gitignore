@@ -1,0 +1,14 @@
+# Python ignores
+.venv/
+__pycache__/
+*.pyc
+
+# Database
+db.sqlite3
+
+# IDE / Editor settings
+.idea/
+.vscode/
+
+# System files
+.DS_Store

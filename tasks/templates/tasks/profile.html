@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>הגדרת צוות ותפקיד | TaskMaster</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap');
+
+        :root {
+            --brand-primary: #0f172a;
+            --brand-accent: #3b82f6;
+            --bg-soft: #f1f5f9;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-soft);
+            font-family: 'Assistant', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: #eff6ff;
+            color: var(--brand-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 20px;
+        }
+
+        h2 {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: var(--brand-primary);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-select, .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            background-color: #ffffff;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-select {
+            background-position: left 0.75rem center;
+            padding-left: 2.5rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--brand-accent);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+            margin: 0 15px;
+        }
+
+        .btn-save {
+            background-color: var(--brand-primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-save:hover {
+            background-color: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-card">
+        <div class="header-icon">
+            <i class="fas fa-id-card"></i>
+        </div>
+        <h2>הגדרת פרופיל צוות</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label><i class="fas fa-list-ul me-1"></i> בחירה מצוות קיים</label>
+                <select id="existing_teams" class="form-select" onchange="syncTeam(this.value)">
+                    <option value="">בחרי צוות מהרשימה</option>
+                    {% for team in existing_teams %}
+                        <option value="{{ team }}">{{ team }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="divider">או יצירת חדש</div>
+
+            <div class="mb-4">
+                <label><i class="fas fa-plus-circle me-1"></i> שם הצוות שלך</label>
+                <input type="text" name="team_name" id="team_input" class="form-control"
+                       value="{{ profile.team_name|default:'' }}" required>
+            </div>
+
+            <div class="mb-4">
+                <label><i class="fas fa-user-tag me-1"></i> מה התפקיד שלך?</label>
+                <select name="role" class="form-select">
+                    <option value="employee" {% if profile.role == 'employee' %}selected{% endif %}>עובד/ת צוות</option>
+                    <option value="manager" {% if profile.role == 'manager' %}selected{% endif %}>מנהל/ת צוות</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-save shadow-sm">
+                שמירת פרופיל וכניסה <i class="fas fa-arrow-left ms-2 small"></i>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function syncTeam(val) {
+            if(val) {
+                document.getElementById('team_input').value = val;
+            }
+        }
+    </script>
+</body>
+</html>
