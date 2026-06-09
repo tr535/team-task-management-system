@@ -27,3 +27,18 @@ A role-based task management platform built with Django and SQLite that enables 
 Managers can create, edit, and delete unassigned tasks, while employees can claim available tasks and update their progress. Tasks move through a defined workflow from **New** to **In Progress** and finally **Completed**. Once completed, tasks become locked to preserve data integrity.
 
 Each team operates independently, ensuring that users can only access tasks associated with their own team, even if they attempt to manipulate URLs or requests manually.
+
+
+## Project Demo
+
+Here is the system in action:
+
+![Workflow Demonstration](gif.gif)
+
+### System Screenshots
+
+**Dashboard View:**
+![Dashboard](dashbord.png)
+
+**Task Management:**
+![Add Task](add-task.png)
