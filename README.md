@@ -4,7 +4,7 @@ A role-based task management platform built with Django and SQLite that enables 
 
 ## Key Features
 
-* User authentication and authorization
+* User authentication and role-based authorization
 * Team-based task isolation
 * Manager and employee roles
 * Task assignment workflow
@@ -12,6 +12,7 @@ A role-based task management platform built with Django and SQLite that enables 
 * Locked completed tasks
 * Personal task filtering ("My Tasks")
 * Secure server-side permission checks
+
 
 ## Technologies
 
