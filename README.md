@@ -44,8 +44,15 @@ Here is the system in action:
 ![Add Task](add-task.png)
 
 
-
 ## Getting Started
+
+### Prerequisites
+
+Make sure you have Python installed on your machine.
+
+```bash
+python --version
+```
 
 ### Installation
 
@@ -53,6 +60,11 @@ Here is the system in action:
 git clone https://github.com/your-username/team-task-management-system.git
 cd team-task-management-system
 pip install -r requirements.txt
+```
+
+### Running the Application
+
+```bash
 python manage.py migrate
 python manage.py runserver
 ```
@@ -62,4 +74,3 @@ Open your browser and navigate to:
 ```
 http://127.0.0.1:8000
 ```
-
